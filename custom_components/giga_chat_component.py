@@ -97,7 +97,7 @@ class GigaChatModelComponent(LCModelComponent):
             value="USERNAME",
             required=False,
         ),
-        SecretStrInput(
+        StrInput(
             name="password",
             display_name="GigaChat Password",
             info="The GigaChat API Password to use.",

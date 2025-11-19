@@ -45,7 +45,7 @@ class GigaChatEmbeddingsComponent(LCEmbeddingsModel):
             info="The scope of the GigaChat API. "
                  f"Defaults to {SCOPE}. "
         ),
-        SecretStrInput(
+        StrInput(
             name="credentials",
             display_name="GigaChat Credentials",
             info="The GigaChat API Key to use for the GigaChat model.",
@@ -61,7 +61,7 @@ class GigaChatEmbeddingsComponent(LCEmbeddingsModel):
             value="USERNAME",
             required=False,
         ),
-        SecretStrInput(
+        StrInput(
             name="password",
             display_name="GigaChat Password",
             info="The GigaChat API Password to use.",
