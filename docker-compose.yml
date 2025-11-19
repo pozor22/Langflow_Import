@@ -1,0 +1,56 @@
+services:
+  langflow:
+    build:
+      context: .
+      dockerfile: Dockerfile-langflow
+    container_name: langflow
+    pull_policy: always
+    user: "0:0"
+    ports:
+      - "7860:7860"
+    depends_on:
+      - postgres
+    environment:
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      - LANGFLOW_CONFIG_DIR=/app/langflow
+      - LANGFLOW_COMPONENTS_PATH=/app/custom_components
+    volumes:
+      - langflow-data:/app/langflow
+      - ./custom_components:/app/custom_components
+
+  langflow-back:
+    build:
+      context: .
+      dockerfile: Dockerfile-backLF
+    container_name: langflow_Back
+    pull_policy: always
+    user: "0:0"
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+    environment:
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      - LANGFLOW_SKIP_AUTH_AUTO_LOGIN=true
+      - LANGFLOW_CONFIG_DIR=/app/langflow
+      - LANGFLOW_LOAD_FLOWS_PATH=/app/flows
+      - LANGFLOW_BACKEND_ONLY=true
+    volumes:
+      - langflow-data:/app/langflow
+      - ./flows:/app/flows
+
+  postgres:
+    image: postgres:16
+    container_name: lf_postgres
+    environment:
+      POSTGRES_USER: langflow
+      POSTGRES_PASSWORD: langflow
+      POSTGRES_DB: langflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  langflow-data:
