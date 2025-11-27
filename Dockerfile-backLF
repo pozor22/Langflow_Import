@@ -1,7 +1,0 @@
-FROM langflowai/langflow:latest
-
-COPY requirements.txt /tmp/requirements.txt
-
-RUN uv pip install -r /tmp/requirements.txt
-
-CMD ["langflow", "run", "--backend-only", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "8082"]

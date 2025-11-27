@@ -1,1 +1,3 @@
 langchain-gigachat
+easyocr
+docx2markdown
