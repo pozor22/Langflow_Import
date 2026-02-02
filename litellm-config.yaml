@@ -1,0 +1,14 @@
+model_list:
+  - model_name: ollama/*
+    litellm_params:
+      model: ollama/*
+      api_base: http://177.228.666.7:11434
+
+  - model_name: gigachat/*
+    litellm_params:
+      model: gigachat/*
+      api_key: "STAVLIKE..."
+      ssl_verify: false
+
+general_settings:
+  master_key: sk-1234

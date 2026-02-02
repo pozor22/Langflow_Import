@@ -1,5 +1,5 @@
-from .qdrant_custom import QdrantCustom
+from .giga_chat_component import GigaChatModelComponent
 
 __all__ = [
-    "QdrantCustom",
+    "GigaChatModelComponent",
 ]

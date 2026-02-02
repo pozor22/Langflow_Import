@@ -1,15 +1,4 @@
 services:
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    networks:
-      - langflow-network
-    restart: unless-stopped
-
   langflow:
     build:
       context: .
@@ -21,39 +10,23 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      qdrant:
-        condition: service_started
     environment:
-      # Langflow
-      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      # ИСПОЛЬЗУЕМ СВОЮ БАЗУ
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow_db
       - LANGFLOW_CONFIG_DIR=/app/langflow
       - LANGFLOW_SAVE_DB_IN_CONFIG_DIR=true
-      - LANGFLOW_LOG_LEVEL=debug
-      - LANGFLOW_COMPONENTS_PATH=/app/custom_components
-      - LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=OLLAMA_BASE_URL
-      - LANGFLOW_LOAD_FLOWS_PATH=/app/flows
       - LANGFLOW_SKIP_AUTH_AUTO_LOGIN=true
 
-      # Ollama
-      - OLLAMA_BASE_URL=http://ollama:11434
+      # Langfuse
+      - LANGFUSE_SECRET_KEY=sk-lf-11cc03cb-e4fb-4a75-a89c-bda7229c909c
+      - LANGFUSE_PUBLIC_KEY=pk-lf-5668670b-8e89-406e-81fa-2f5c8f65005d
+      - LANGFUSE_HOST=https://cloud.langfuse.com
     volumes:
       - langflow_data:/app/langflow
-      - file_injest:/app/file_injest
-      - flow_output:/app/flow_output
-      - nltk_data:/root/nltk_data
       - ./custom_components:/app/custom_components
-      - ./flows:/app/flows
-      - ./config:/app/config
-      - ./exemple:/app/exemple
     networks:
       - langflow-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/collections"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   postgres:
     image: postgres:17
@@ -61,50 +34,46 @@ services:
     environment:
       POSTGRES_USER: langflow
       POSTGRES_PASSWORD: langflow
-      POSTGRES_DB: langflow
+      # Это создаст базу по умолчанию, но скрипт ниже создаст остальные
+      POSTGRES_DB: langflow_db
     ports:
       - "5433:5432"
+#    command: >
+#      sh -c "echo 'CREATE DATABASE litellm_db;' > /docker-entrypoint-initdb.d/init.sql && docker-entrypoint.sh postgres"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - langflow-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U langflow"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U langflow -d langflow_db"]
+      interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 10s
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: qdrant
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-    volumes:
-      - qdrant_storage:/qdrant/storage:z
-      - file_injest:/file_injest
-    networks:
-      - langflow-network
-    environment:
-      - QDRANT_ALLOW_RECOVERY_MODE=true
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/readiness"]
-      interval: 30s
-      timeout: 15s
-      retries: 5
-      start_period: 40s
+#  litellm:
+#    image: ghcr.io/berriai/litellm:main-latest
+#    container_name: litellm
+#    ports:
+#      - "4000:4000"
+#    volumes:
+#      - ./litellm-config.yaml:/app/config.yaml
+#    environment:
+#      # ИСПОЛЬЗУЕМ СВОЮ ОТДЕЛЬНУЮ БАЗУ
+#      - DATABASE_URL=postgresql://langflow:langflow@postgres:5432/litellm_db
+#      - GIGACHAT_CREDENTIALS=MDE5YTk2YWQtMTUyNi03ODQxLWJmN2ItODI0Njc5YTBjZDM0OmRmZDQ0YmEzLWJiYjUtNGIwMy04YzJlLTZlOWM2YzUzMDdiNg==
+#      - GIGACHAT_SCOPE=GIGACHAT_API_PERS
+#    command: [ "--config", "/app/config.yaml" ]
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    networks:
+#      - langflow-network
+#    restart: unless-stopped
 
 volumes:
-  ollama_data:
   langflow_data:
   postgres_data:
-  qdrant_storage:
-  file_injest:
-  flow_output:
-  nltk_data:
 
 networks:
   langflow-network:
