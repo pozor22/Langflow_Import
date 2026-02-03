@@ -68,7 +68,7 @@ class APIProxyComponent(Component):
 
         try:
             # 1. Отправка в очередь
-            response = requests.post(f"{proxy_url}/api/proxy", json=payload)
+            response = requests.post(f"{proxy_url}/api/v1/proxy", json=payload)
             response.raise_for_status()
             task_data = response.json()
             task_id = task_data.get("task_id")
