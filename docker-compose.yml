@@ -34,12 +34,9 @@ services:
     environment:
       POSTGRES_USER: langflow
       POSTGRES_PASSWORD: langflow
-      # Это создаст базу по умолчанию, но скрипт ниже создаст остальные
       POSTGRES_DB: langflow_db
     ports:
       - "5433:5432"
-#    command: >
-#      sh -c "echo 'CREATE DATABASE litellm_db;' > /docker-entrypoint-initdb.d/init.sql && docker-entrypoint.sh postgres"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -50,26 +47,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-#  litellm:
-#    image: ghcr.io/berriai/litellm:main-latest
-#    container_name: litellm
-#    ports:
-#      - "4000:4000"
-#    volumes:
-#      - ./litellm-config.yaml:/app/config.yaml
-#    environment:
-#      # ИСПОЛЬЗУЕМ СВОЮ ОТДЕЛЬНУЮ БАЗУ
-#      - DATABASE_URL=postgresql://langflow:langflow@postgres:5432/litellm_db
-#      - GIGACHAT_CREDENTIALS=MDE5YTk2YWQtMTUyNi03ODQxLWJmN2ItODI0Njc5YTBjZDM0OmRmZDQ0YmEzLWJiYjUtNGIwMy04YzJlLTZlOWM2YzUzMDdiNg==
-#      - GIGACHAT_SCOPE=GIGACHAT_API_PERS
-#    command: [ "--config", "/app/config.yaml" ]
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#    networks:
-#      - langflow-network
-#    restart: unless-stopped
 
 volumes:
   langflow_data:

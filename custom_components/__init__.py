@@ -1,5 +1,5 @@
-from .giga_chat_component import GigaChatModelComponent
+from .gigachat_node import GigaChatProxyPolling
 
 __all__ = [
-    "GigaChatModelComponent",
+    "GigaChatProxyPolling",
 ]
