@@ -34,6 +34,11 @@ services:
       - LANGFLOW_LOAD_FLOWS_PATH=/app/flows
       - LANGFLOW_SKIP_AUTH_AUTO_LOGIN=true
 
+      # langfuse
+      - LANGFUSE_SECRET_KEY=sk-lf-559b2bd3-a389-4935-be56-f1818f437edd
+      - LANGFUSE_PUBLIC_KEY=pk-lf-8d7820b4-b2fc-408a-9f6c-bbfc1a0d43d3
+      - LANGFUSE_HOST=https://cloud.langfuse.com
+
       # Ollama
       - OLLAMA_BASE_URL=http://ollama:11434
     volumes:
@@ -45,6 +50,7 @@ services:
       - ./flows:/app/flows
       - ./config:/app/config
       - ./exemple:/app/exemple
+      - ./exemple2:/app/exemple2
     networks:
       - langflow-network
     restart: unless-stopped
@@ -88,6 +94,7 @@ services:
     networks:
       - langflow-network
     environment:
+      - QDRANT__SERVICE__API_KEY=123
       - QDRANT_ALLOW_RECOVERY_MODE=true
     restart: unless-stopped
     healthcheck:

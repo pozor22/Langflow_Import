@@ -1,3 +1,4 @@
 langchain-gigachat
 easyocr
 docx2markdown
+qdrant-client==1.16.1
